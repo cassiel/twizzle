@@ -7,7 +7,7 @@
 
 A Clojure library for simple timeline-based automation, useful for animation systems.
 
-An automation state maps named *channels* to time-varying values. Each channel can be populated with automation segments, each of which has a start time, duration and target value for the channel's value.
+An automation state maps named /channels/ to time-varying values. Each channel can be populated with automation segments, each of which has a start time, duration and target value for the channel's value.
 
 =nanomator= doesn't have a particular notion of time: it just uses integer counters which can be milliseconds (for realtime animation), frames (for rendering), or anything else.
 
@@ -23,7 +23,6 @@ In =project.clj=:
 
 In the code:
 
-
 #+BEGIN_SRC clojure
   (:require [eu.cassiel [nanomator :as nn]])
 #+END_SRC
@@ -31,8 +30,45 @@ In the code:
 Create a new automation state with
 
 #+BEGIN_SRC clojure
-  (nn/???)
+  (def state (nn/initial))
 #+END_SRC
+
+For a state with non-default starting values, add an initialisation map:
+
+#+BEGIN_SRC clojure
+  (def state (nn/initial :init {:pitchbend 64
+                                :starts-at-one 1.0}))
+#+END_SRC
+
+(The default starting value is =0=.)
+
+Sample a state at a specific timestamp (here, =200=):
+
+#+BEGIN_SRC clojure
+  (nn/sample state :pitchbend 200)
+#+END_SRC
+
+A call to =sample= just returns the sampled value at that timestamp; the state is not changed.
+
+Add an automation fade to a state:
+
+#+BEGIN_SRC clojure
+(nn/automate state :my-param 200 10 1.0)
+#+END_SRC
+
+Arguments are: channel name, starting timestamp, duration, final (target) value. This returns a new state. The fade duration (which here has length =10=) specifies that the fade terminates at =210=; sampling here will return =1.0=. Sampling at =209= will return a value slightly biased towards the previous value of =:my-param=.
+
+Sampling anywhere beyond this fade will return the final value of the fade. If several consecutive fades are present for a channel, the result will be the final value of the fade with the highest starting point. (Aside: don't overlap fades on the same channel.)
+
+Purge expired fades, to return a new state:
+
+#+BEGIN_SRC clojure
+  (nn/purge state 300)
+#+END_SRC
+
+This returns a new state with any fades which lie in front of the specified timestamp (here, =300=) to be removed. The fades are /chased/, so that the target values of purged fades are applied.
+
+In general, a state can be examined at any timestamp point, and time need not run forward monotonically. The exception is =purge=, which removes expired fades. Sampling a purged state ahead of the purge point is the same as sampling at the purge point.
 
 * Documentation
 
