@@ -46,6 +46,16 @@ Note that default initial value is =nil=. The default interpolator will interpre
 
 ** Sampling and Fading
 
+Add an automation fade to a state:
+
+#+BEGIN_SRC clojure
+(nn/automate state :my-param 200 10 1.0)
+#+END_SRC
+
+Arguments are: channel name, starting timestamp, duration, final (target) value. This returns a new state. The fade duration (which here has length =10=) specifies that the fade terminates at =210=; sampling here will return =1.0=. Sampling at =209= will return a value slightly biased towards the previous value of =:my-param=.
+
+Sampling anywhere beyond this fade will return the final value of the fade (=1.0=). If several consecutive fades are present for a channel, the result will be the final value of the fade with the highest starting time. (Aside: don't overlap fades on the same channel.)
+
 Locate a state to a particular position:
 
 #+BEGIN_SRC clojure
@@ -70,16 +80,6 @@ Sample a state at its current timestamp:
 #+END_SRC
 
 A call to =sample= just returns the sampled value at that timestamp; the state is not changed.
-
-Add an automation fade to a state:
-
-#+BEGIN_SRC clojure
-(nn/automate state :my-param 200 10 1.0)
-#+END_SRC
-
-Arguments are: channel name, starting timestamp, duration, final (target) value. This returns a new state. The fade duration (which here has length =10=) specifies that the fade terminates at =210=; sampling here will return =1.0=. Sampling at =209= will return a value slightly biased towards the previous value of =:my-param=.
-
-Sampling anywhere beyond this fade will return the final value of the fade (=1.0=). If several consecutive fades are present for a channel, the result will be the final value of the fade with the highest starting time. (Aside: don't overlap fades on the same channel.)
 
 ** Interpolating
 
