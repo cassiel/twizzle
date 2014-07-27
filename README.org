@@ -11,7 +11,7 @@ An automation state maps named /channels/ to time-varying values. Each channel c
 
 =nanomator= doesn't have a particular notion of time: it just uses integer counters which can be milliseconds (for realtime animation), frames (for rendering), or anything else.
 
-By default, channel values are floats, but it's possible to attach interpolation functions to allow automation over arbitrary data values (for example, vectors of floats for RGB colour mixing).
+By default, channel values are floats (mainly because the default interpolator returns floats), but it's possible to attach interpolation functions to allow automation over arbitrary data values (for example, vectors of floats for RGB colour mixing).
 
 * Usage
 
@@ -42,7 +42,7 @@ For a state with non-default starting values, add an initialisation map:
                                 :starts-at-one 1.0}))
 #+END_SRC
 
-(The default starting value is =0=.)
+Note that default initial value is =nil=. The default interpolator will interpret a start point of =nil= as =0= in any calculations, so once you start fading you'll get floats, but before any fades take effect the sampled value will come back as =nil=.
 
 ** Sampling and Fading
 
@@ -61,13 +61,12 @@ A call to =locate= returns a new state with any fades which lie in front of the 
       (nn/sample :my-param))
 #+END_SRC
 
-This last example returns =9.9=, the target of the purged fade. If we added a second locate point at =50= after the first locate (say: ahead of the original fade), the result would still be =9.9=, since the first =locate= would have chased that fade and removed it.
+This last example returns =9.9=, the target of the purged fade. If we added a second locate point at =50= on the line after the first locate (say: in front of the original fade), the result would still be =9.9=, since the first =locate= would have chased that fade and removed it.
 
-
-Sample a state at a specific timestamp (here, =200=):
+Sample a state at its current timestamp:
 
 #+BEGIN_SRC clojure
-  (nn/sample state :pitchbend 200)
+  (nn/sample state :pitchbend)
 #+END_SRC
 
 A call to =sample= just returns the sampled value at that timestamp; the state is not changed.
@@ -80,17 +79,7 @@ Add an automation fade to a state:
 
 Arguments are: channel name, starting timestamp, duration, final (target) value. This returns a new state. The fade duration (which here has length =10=) specifies that the fade terminates at =210=; sampling here will return =1.0=. Sampling at =209= will return a value slightly biased towards the previous value of =:my-param=.
 
-Sampling anywhere beyond this fade will return the final value of the fade. If several consecutive fades are present for a channel, the result will be the final value of the fade with the highest starting point. (Aside: don't overlap fades on the same channel.)
-
-** Purging
-
-Purge expired fades, to return a new state:
-
-#+BEGIN_SRC clojure
-  (nn/purge state 300)
-#+END_SRC
-
-Purging is an efficiency measure.
+Sampling anywhere beyond this fade will return the final value of the fade (=1.0=). If several consecutive fades are present for a channel, the result will be the final value of the fade with the highest starting time. (Aside: don't overlap fades on the same channel.)
 
 ** Interpolating
 
@@ -103,7 +92,7 @@ For automation over values more interesting than floats, provide an interpolatio
                                 :background [0 0 0]}))
 #+END_SRC
 
-The interpolator (in this case, =colour-mix=) will be called with three arguments: start value, end value, and interpolation position (from =0.0= to =1.0=). Unless =0= works as a potential start value, provide an initial value as well.
+The interpolator (in this case, =colour-mix=) will be called with three arguments: start value, end value, and interpolation position (from =0.0= to =1.0=). Unless =nil= works as a potential initial value, provide that as well.
 
 * Documentation
 

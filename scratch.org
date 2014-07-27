@@ -43,4 +43,17 @@
                                     (update-in [:current] (constantly 0.5)))))
 
   (nn/automate (nn/initial) :A 100 10 1.0)
+
+  (-> (nn/initial :init {:X 99})
+      (nn/automate :X 100 20 0)
+      (nn/locate 100)
+      (nn/sample :X))
+
+  (-> (nn/initial)
+      (nn/locate 105)
+      (nn/automate :my-param 100 10 10.0)
+      (nn/sample :my-param))
+
+  (nn/purge-and-sample {:fades (seq [{:start 100 :dur 10 :target 10.0}])}
+                       105)
 #+END_SRC

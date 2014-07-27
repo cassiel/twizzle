@@ -2,8 +2,8 @@
   (:require [eu.cassiel.nanomator :as nn]
             [midje.sweet :refer :all]))
 
-(fact "Unused channels return 0"
-      (nn/sample (nn/initial) :WHATEVER) => 0)
+(fact "Unused channels return nil"
+      (nn/sample (nn/initial) :WHATEVER) => nil)
 
 (fact "Can sample an initial channel."
       (nn/sample (nn/initial :init {:X 42}) :X) => 42)
@@ -41,7 +41,7 @@
           (nn/automate :my-param 100 10 9.9)
           (nn/locate 50)
           (nn/sample :my-param))
-      => (roughly 0))
+      => nil)
 
 (fact "partial purge"
       (-> (nn/initial)
@@ -81,7 +81,7 @@
 
 (fact "can handle fades with zero duration"
       (-> (nn/initial)
-          (nn/automation :my-param 50 0 1.0)
+          (nn/automate :my-param 50 0 1.0)
           (nn/locate 100)
           (nn/sample :my-param)))
 

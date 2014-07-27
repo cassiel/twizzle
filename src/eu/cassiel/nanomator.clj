@@ -47,9 +47,10 @@
              (partial reduce-kv (fn [m k v] (assoc m k (f v))) nil)))
 
 (defn interp-default
-  "Default interpolation"
-  [start end pos]
-  (+ start (* (- end start) pos)))
+  "Default interpolation. Treats first value of `nil` as `0`."
+  [val-1 val-2 pos]
+  (let [val-1 (or val-1 0)]
+    (+ val-1 (* (- val-2 val-1) pos))))
 
 (defn apply-fade
   "Apply a fade to a current value, return new current value (unchanged if fade in the future)."
@@ -64,20 +65,24 @@
         :else
         (interp-default current target (/ (- ts start) dur))))
 
-(defn purge-to
-  "Purge a sequence to a timestamp."
+(defn purge-and-sample
+  "Purge a sequence to a timestamp, sample it. Return sequence * value.
+   Note that the value might not be the same as the :current field; if we're
+   part-way through a sequence, the field is still nailed to the start value."
   [{:keys [fades current] :as sequence} ts]
-  (cond (nil? fades)
-        sequence
+  (if (empty? fades)
+    [sequence current]
+    (let [[s s'] fades]
+      (cond (> (:start s) ts)
+            [sequence current]
 
-        (> (:start (first fades)) ts)
-        sequence
+            (< (+ (:start s) (:dur s)) ts)
+            (recur {:fades s'
+                    :current (:target s)} ts)
 
-        :else
-        (let [[hd tl] fades
-              new-current (apply-fade hd ts current)]
-          (recur {:fades tl
-                  :current new-current} ts))))
+            :else
+            [{:fades fades :current current}
+             (apply-fade s ts current)]))))
 
 (defn locate
   "Change the location of this state to timestamp `ts`, returning a new state. Expired
@@ -86,9 +91,9 @@
   [state ts]
   (-> state
       (assoc :time ts)
-      (apply-to-sequences #(purge-to % ts))))
+      (apply-to-sequences #(first (purge-and-sample % ts)))))
 
 (defn sample
   "Sample a channel `ch` at the state's current time."
-  [{:keys [current time]} ch]
-  (or (get current ch) 0))
+  [{:keys [sequences time]} ch]
+  (fnext (purge-and-sample (get sequences ch) time)))
