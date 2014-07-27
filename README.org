@@ -15,6 +15,8 @@ By default, channel values are floats, but it's possible to attach interpolation
 
 * Usage
 
+** Setup
+
 In =project.clj=:
 
 #+BEGIN_SRC clojure
@@ -42,6 +44,26 @@ For a state with non-default starting values, add an initialisation map:
 
 (The default starting value is =0=.)
 
+** Sampling and Fading
+
+Locate a state to a particular position:
+
+#+BEGIN_SRC clojure
+  (nn/locate state 300)
+#+END_SRC
+
+A call to =locate= returns a new state with any fades which lie in front of the specified timestamp (here, =300=) to be removed, once they've been sampled: in other words, the fades are /chased/, so that the target values of purged fades are applied. Example:
+
+#+BEGIN_SRC clojure
+  (-> (nn/initial)
+      (nn/automate :my-param 100 10 9.9)
+      (nn/locate 150)
+      (nn/sample :my-param))
+#+END_SRC
+
+This last example returns =9.9=, the target of the purged fade. If we added a second locate point at =50= after the first locate (say: ahead of the original fade), the result would still be =9.9=, since the first =locate= would have chased that fade and removed it.
+
+
 Sample a state at a specific timestamp (here, =200=):
 
 #+BEGIN_SRC clojure
@@ -60,15 +82,28 @@ Arguments are: channel name, starting timestamp, duration, final (target) value.
 
 Sampling anywhere beyond this fade will return the final value of the fade. If several consecutive fades are present for a channel, the result will be the final value of the fade with the highest starting point. (Aside: don't overlap fades on the same channel.)
 
+** Purging
+
 Purge expired fades, to return a new state:
 
 #+BEGIN_SRC clojure
   (nn/purge state 300)
 #+END_SRC
 
-This returns a new state with any fades which lie in front of the specified timestamp (here, =300=) to be removed. The fades are /chased/, so that the target values of purged fades are applied.
+Purging is an efficiency measure.
 
-In general, a state can be examined at any timestamp point, and time need not run forward monotonically. The exception is =purge=, which removes expired fades. Sampling a purged state ahead of the purge point is the same as sampling at the purge point.
+** Interpolating
+
+For automation over values more interesting than floats, provide an interpolation function:
+
+#+BEGIN_SRC clojure
+  (def state (nn/initial :interp {:foreground colour-mix
+                                  :background colour-mix}
+                         :init {:foreground [1 1 1]
+                                :background [0 0 0]}))
+#+END_SRC
+
+The interpolator (in this case, =colour-mix=) will be called with three arguments: start value, end value, and interpolation position (from =0.0= to =1.0=). Unless =0= works as a potential start value, provide an initial value as well.
 
 * Documentation
 

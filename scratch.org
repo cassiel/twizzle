@@ -11,4 +11,36 @@
 
   (foo :init {:A 24})
   (foo)
+
+  (map (fn [[a b]] (+ a b))
+       (zipmap [1 2 3] [4 5 6]))
+
+
+  (->> (interleave [1 2 3] [4 5 6])
+       (partition 2)
+       (map (fn [[x y]] (+ x y))))
+
+
+  (reduce-kv (fn [m k v] (assoc m k (- v))) nil {:A 1 :B 3})
+#+END_SRC
+
+** Internal testing
+
+#+BEGIN_SRC clojure
+  (ns user
+    (:require [eu.cassiel [nanomator :as nn]]))
+
+  (nn/apply-to-fades {:sequences {:A {:fades (seq [1 4 66 78])}
+                                  :B {:fades (seq [999]) :current 3.142}
+                                  :C {:fades nil}}}
+                     #(conj % 0))
+
+  (nn/apply-to-sequences {:sequences {:A {:fades (seq [1 4 66 78])}
+                                      :B {:fades (seq [999]) :current 3.142}
+                                      :C {:fades nil}}}
+                         (fn [x] (-> x
+                                    (update-in [:fades] #(conj % 0))
+                                    (update-in [:current] (constantly 0.5)))))
+
+  (nn/automate (nn/initial) :A 100 10 1.0)
 #+END_SRC
