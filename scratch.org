@@ -1,10 +1,14 @@
 -*- mode: org; mode: visual-line; -*-
 #+STARTUP: indent
 
-* HELLO
+* SCRATCH
+
+** Random testing
 
 #+BEGIN_SRC clojure
-  [1 2 3]
-  
-  ,*e
+  (defn foo [& {:keys [init] :or {init {}}}]
+    {:got-it init})
+
+  (foo :init {:A 24})
+  (foo)
 #+END_SRC
