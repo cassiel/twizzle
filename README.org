@@ -1,7 +1,7 @@
 =-*- mode: org; mode: visual-line;  -*-=
 #+STARTUP: indent
 
-* =twizzle= [[http://travis-ci.org/cassiel/nanomator][https://secure.travis-ci.org/cassiel/twizzle.png]] [[https://www.versioneye.com/user/projects/53d2a43b851c56dc68000231][https://www.versioneye.com/user/projects/53d2a43b851c56dc68000231/badge.svg]]
+* =twizzle= [[http://travis-ci.org/cassiel/twizzle][https://secure.travis-ci.org/cassiel/twizzle.png]] [[https://www.versioneye.com/user/projects/53d2a43b851c56dc68000231][https://www.versioneye.com/user/projects/53d2a43b851c56dc68000231/badge.svg]]
 
 * Introduction
 
