@@ -9,12 +9,11 @@ A Clojure library for simple timeline-based automation, useful for animation sys
 
 An automation state maps named /channels/ to time-varying values. Each channel can be populated with automation segments, each of which has a start time, duration and target value for the channel's value.
 
-=twizzle= doesn't have a particular notion of time: it just uses integer counters which can be milliseconds (for realtime animation), frames (for rendering), or anything else.
+=twizzle= doesn't have a particular notion of time: it just uses timeline values which can be milliseconds (for realtime animation), frames (for rendering), floats, or anything else numerical.
 
 By default, channel values are floats (mainly because the default interpolator returns floats), but it's possible to attach interpolation functions to allow automation over arbitrary data values (for example, vectors of floats for RGB colour mixing).
 
 * Usage
-
 ** Setup
 
 In =project.clj=:
@@ -26,19 +25,20 @@ In =project.clj=:
 In the code:
 
 #+BEGIN_SRC clojure
-  (:require [eu.cassiel [twizzle :as tt]])
+  (ns example
+    (:require (eu.cassiel [twizzle :as tw])))
 #+END_SRC
 
 Create a new automation state with
 
 #+BEGIN_SRC clojure
-  (def state (nn/initial))
+  (def state (tw/initial))
 #+END_SRC
 
 For a state with non-default starting values, add an initialisation map:
 
 #+BEGIN_SRC clojure
-  (def state (nn/initial :init {:pitchbend 64
+  (def state (tw/initial :init {:pitchbend 64
                                 :starts-at-one 1.0}))
 #+END_SRC
 
@@ -49,7 +49,7 @@ Note that default initial value is =nil=. The default interpolator will interpre
 Add an automation fade to a state:
 
 #+BEGIN_SRC clojure
-(nn/automate state :my-param 200 10 1.0)
+  (tw/automate state :my-param 200 10 1.0)
 #+END_SRC
 
 Arguments are: state, channel name, starting timestamp, duration, final (target) value. This returns a new state. The fade duration (which here has length =10=) specifies that the fade terminates at =210=; sampling here will return =1.0=. Sampling at =209= will return a value slightly biased towards the previous value of =:my-param=.
@@ -59,16 +59,16 @@ Sampling anywhere beyond this fade will return the final value of the fade (=1.0
 Locate a state to a particular position:
 
 #+BEGIN_SRC clojure
-  (nn/locate state 300)
+  (tw/locate state 300)
 #+END_SRC
 
 A call to =locate= returns a new state with any fades which lie in front of the specified timestamp (here, =300=) to be removed, once they've been sampled: in other words, the fades are /chased/, so that the target values of purged fades are applied. Example:
 
 #+BEGIN_SRC clojure
-  (-> (nn/initial)
-      (nn/automate :my-param 100 10 9.9)
-      (nn/locate 150)
-      (nn/sample :my-param))
+  (-> (tw/initial)
+      (tw/automate :my-param 100 10 9.9)
+      (tw/locate 150)
+      (tw/sample :my-param))
 #+END_SRC
 
 This last example returns =9.9=, the target of the purged fade. If we added a second locate point at =50= on the line after the first locate (say: in front of the original fade), the result would still be =9.9=, since the first =locate= would have chased that fade and removed it.
@@ -76,7 +76,7 @@ This last example returns =9.9=, the target of the purged fade. If we added a se
 Sample a state at its current timestamp:
 
 #+BEGIN_SRC clojure
-  (nn/sample state :pitchbend)
+  (tw/sample state :pitchbend)
 #+END_SRC
 
 A call to =sample= just returns the sampled value at that timestamp; the state is not changed.
@@ -86,7 +86,7 @@ A call to =sample= just returns the sampled value at that timestamp; the state i
 For automation over values more interesting than floats, provide an interpolation function:
 
 #+BEGIN_SRC clojure
-  (def state (nn/initial :interp {:foreground colour-mix
+  (def state (tw/initial :interp {:foreground colour-mix
                                   :background colour-mix}
                          :init {:foreground [1 1 1]
                                 :background [0 0 0]}))
@@ -96,7 +96,7 @@ The interpolator (in this case, =colour-mix=) will be called with three argument
 
 * Documentation
 
-The source documentation is [[https://cassiel.github.io/nanomator][here]].
+The source documentation is [[https://cassiel.github.io/twizzle][here]].
 
 * License
 
