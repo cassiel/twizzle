@@ -1,9 +1,9 @@
-(ns eu.cassiel.twizzle
+(ns eu.cassiel.twizzle-test
   (:require [eu.cassiel.twizzle :as tw]
             [midje.sweet :refer :all]))
 
 (fact "Unused channels return nil"
-      (tw/sample (nn/initial) :WHATEVER) => nil)
+      (tw/sample (tw/initial) :WHATEVER) => nil)
 
 (fact "Can sample an initial channel."
       (tw/sample (tw/initial :init {:X 42}) :X) => 42)
