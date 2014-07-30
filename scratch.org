@@ -28,32 +28,32 @@
 
 #+BEGIN_SRC clojure
   (ns user
-    (:require [eu.cassiel [nanomator :as nn]]))
+    (:require [eu.cassiel [twizzle :as tt]]))
 
-  (nn/apply-to-fades {:sequences {:A {:fades (seq [1 4 66 78])}
+  (tt/apply-to-fades {:sequences {:A {:fades (seq [1 4 66 78])}
                                   :B {:fades (seq [999]) :current 3.142}
                                   :C {:fades nil}}}
                      #(conj % 0))
 
-  (nn/apply-to-sequences {:sequences {:A {:fades (seq [1 4 66 78])}
+  (tt/apply-to-sequences {:sequences {:A {:fades (seq [1 4 66 78])}
                                       :B {:fades (seq [999]) :current 3.142}
                                       :C {:fades nil}}}
                          (fn [x] (-> x
                                     (update-in [:fades] #(conj % 0))
                                     (update-in [:current] (constantly 0.5)))))
 
-  (nn/automate (nn/initial) :A 100 10 1.0)
+  (tt/automate (tt/initial) :A 100 10 1.0)
 
-  (-> (nn/initial :init {:X 99})
-      (nn/automate :X 100 20 0)
-      (nn/locate 100)
-      (nn/sample :X))
+  (-> (tt/initial :init {:X 99})
+      (tt/automate :X 100 20 0)
+      (tt/locate 100)
+      (tt/sample :X))
 
-  (-> (nn/initial)
-      (nn/locate 105)
-      (nn/automate :my-param 100 10 10.0)
-      (nn/sample :my-param))
+  (-> (tt/initial)
+      (tt/locate 105)
+      (tt/automate :my-param 100 10 10.0)
+      (tt/sample :my-param))
 
-  (nn/purge-and-sample {:fades (seq [{:start 100 :dur 10 :target 10.0}])}
+  (tt/purge-and-sample {:fades (seq [{:start 100 :dur 10 :target 10.0}])}
                        105)
 #+END_SRC

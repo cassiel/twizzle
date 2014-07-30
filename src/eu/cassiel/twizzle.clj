@@ -1,4 +1,4 @@
-(ns eu.cassiel.nanomator
+(ns eu.cassiel.twizzle
   "Nano-automation system.")
 
 (defn initial

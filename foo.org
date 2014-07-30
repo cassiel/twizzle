@@ -1,5 +1,0 @@
-* Testing in ord-mode.
-
-  - [[http://travis-ci.org/cassiel/nanomator][https://secure.travis-ci.org/cassiel/nanomator.png]]
-
-  - [[https://www.versioneye.com/user/projects/53d2a43b851c56dc68000231][https://www.versioneye.com/user/projects/53d2a43b851c56dc68000231/badge.svg]]
