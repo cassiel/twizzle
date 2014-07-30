@@ -1,49 +1,22 @@
 (ns eu.cassiel.twizzle
-  "Nano-automation system.")
+  "The Adventures of Twizzle, a simple timeline automation system.")
 
 (defn initial
   "Initial system state. Takes an optional map of starting values for channels
-   which, at the earliest timestamp, we want to be other than zero."
+   which, in front of any fades, we want to be other than zero."
   [& {:keys [init interp]}]
   {:interp interp
-   ;; Sequences: map from chan-name to {:fades, :current}.
-   :sequences (reduce-kv (fn [m k v] (assoc m k {:fades nil :current v}))
-                         nil
-                         init)
+   ;; Channels: map from chan-name to {:fades, :current}.
+   :channels (reduce-kv (fn [m k v] (assoc m k {:fades nil :current v}))
+                        nil
+                        init)
    :time 0})
 
-(defn automate
-  "Add an automation segment to a channel `ch`. The segment starts at time, `ts`,
-   lasts for `dur` frames and fades from the current value to `target`. The
-   target value will actually be hit at time `(+ ts dur 1)` (so `dur` is treated
-   as a time measure, not a frame count).
-
-   Returns a new state, with this segment added, even if we're notionally beyond
-   the end of the segment: the state doesn't track the last-executed time.
-
-   Don't overlap segments. Bad things will happen. (Actually, segments will be applied
-   in increasing order of starting stamp.)"
-  [state ch start-ts dur target]
-  (update-in state
-             [:sequences ch]
-             (fn [seqs]
-               (update-in seqs [:fades]
-                          #(as-> % L
-                                 (conj L {:start start-ts :dur dur :target target})
-                                 (sort-by :start L))))))
-
-(defn apply-to-fades
-  "Apply function to fade lists of all channels"
+(defn apply-to-channels
+  "Apply function to (fades * current) of all channels."
   [state f]
   (update-in state
-             [:sequences]
-             (partial reduce-kv (fn [m k v] (assoc m k (update-in v [:fades] f))) nil)))
-
-(defn apply-to-sequences
-  "Apply function to sequences (fades * current) of all channels"
-  [state f]
-  (update-in state
-             [:sequences]
+             [:channels]
              (partial reduce-kv (fn [m k v] (assoc m k (f v))) nil)))
 
 (defn interp-default
@@ -65,24 +38,41 @@
         :else
         (interp-default current target (/ (- ts start) dur))))
 
-(defn purge-and-sample
-  "Purge a sequence to a timestamp, sample it. Return sequence * value.
-   Note that the value might not be the same as the :current field; if we're
-   part-way through a sequence, the field is still nailed to the start value."
-  [{:keys [fades current] :as sequence} ts]
+(defn purge
+  "Purge a channel; remove all expired fades, chasing them (and updating `:current`)
+   as we go."
+  [{:keys [fades current] :as channel} ts]
   (if (empty? fades)
-    [sequence current]
-    (let [[s s'] fades]
-      (cond (> (:start s) ts)
-            [sequence current]
+    channel
+    (let [[f f'] fades]
+      (cond (> (:start f) ts)
+            channel
 
-            (< (+ (:start s) (:dur s)) ts)
-            (recur {:fades s'
-                    :current (:target s)} ts)
+            (< (+ (:start f) (:dur f)) ts)
+            (recur {:fades f'
+                    :current (:target f)} ts)
 
             :else
-            [{:fades fades :current current}
-             (apply-fade s ts current)]))))
+            channel))))
+
+(defn automate
+  "Add an automation fade to a channel `ch`. The fade starts at time, `ts`,
+   lasts for `dur` frames and fades from the current value to `target`.
+
+   If this fade lies totally in front of the current timestamp, it'll be chased and
+   removed; otherwise it'll be interpolated if it's in scope.
+
+   Returns a new state.
+
+   Don't overlap fades. Bad things will happen. (Actually, fades will be applied
+   in increasing order of starting stamp.)"
+  [state ch start-ts dur target]
+  (update-in state
+             [:channels ch]
+             (fn [{f :fades c :current}]
+               (let [f' (sort-by :start (conj f {:start start-ts :dur dur :target target}))
+                     ch' (purge {:fades f' :current c} (:time state))]
+                 ch'))))
 
 (defn locate
   "Change the location of this state to timestamp `ts`, returning a new state. Expired
@@ -91,9 +81,13 @@
   [state ts]
   (-> state
       (assoc :time ts)
-      (apply-to-sequences #(first (purge-and-sample % ts)))))
+      (apply-to-channels #(purge % ts))))
 
 (defn sample
-  "Sample a channel `ch` at the state's current time."
-  [{:keys [sequences time]} ch]
-  (fnext (purge-and-sample (get sequences ch) time)))
+  "Sample a channel `ch` at the state's current time. Assume purged (i.e. no fades
+   are completely in front of the sample point)."
+  [{:keys [channels time]} ch]
+  (let [{:keys [fades current]} (get channels ch)]
+    (if (empty? fades)
+      current
+      (apply-fade (first fades) time current))))

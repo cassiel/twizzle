@@ -30,17 +30,17 @@
   (ns user
     (:require [eu.cassiel [twizzle :as tw]]))
 
-  (tw/apply-to-fades {:sequences {:A {:fades (seq [1 4 66 78])}
-                                  :B {:fades (seq [999]) :current 3.142}
-                                  :C {:fades nil}}}
+  (tw/apply-to-fades {:channels {:A {:fades (seq [1 4 66 78])}
+                                 :B {:fades (seq [999]) :current 3.142}
+                                 :C {:fades nil}}}
                      #(conj % 0))
 
-  (tw/apply-to-sequences {:sequences {:A {:fades (seq [1 4 66 78])}
-                                      :B {:fades (seq [999]) :current 3.142}
-                                      :C {:fades nil}}}
-                         (fn [x] (-> x
-                                    (update-in [:fades] #(conj % 0))
-                                    (update-in [:current] (constantly 0.5)))))
+  (tw/apply-to-channels {:channels {:A {:fades (seq [1 4 66 78])}
+                                    :B {:fades (seq [999]) :current 3.142}
+                                    :C {:fades nil}}}
+                        (fn [x] (-> x
+                                   (update-in [:fades] #(conj % 0))
+                                   (update-in [:current] (constantly 0.5)))))
 
   (tw/automate (tw/initial) :A 100 10 1.0)
 
