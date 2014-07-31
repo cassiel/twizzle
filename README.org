@@ -87,7 +87,7 @@ Sample a state at its current timestamp:
 
 A call to =sample= just returns the sampled value at that timestamp; the state is not changed.
 
-** Interpolating
+** TODO Interpolating
 
 For automation over values more interesting than floats, provide an interpolation function:
 
@@ -99,6 +99,8 @@ For automation over values more interesting than floats, provide an interpolatio
 #+END_SRC
 
 The interpolator (in this case, =colour-mix=) will be called with three arguments: start value, end value, and interpolation position (from =0.0= to =1.0=). Unless =nil= works as a potential initial value, provide that as well.
+
+We have some interpolators (including the default) in namespace `eu.cassiel.twizzle.interpolators` - see the [[https://cassiel.github.io/twizzle][documentation]].
 
 ** Complex Keys
 

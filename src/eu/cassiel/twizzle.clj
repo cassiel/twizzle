@@ -1,5 +1,6 @@
 (ns eu.cassiel.twizzle
-  "The Adventures of Twizzle, a simple timeline automation system.")
+  "The Adventures of Twizzle, a simple timeline automation system."
+  (:require [eu.cassiel.twizzle [interpolators :as it]]))
 
 (defn initial
   "Initial system state. Takes an optional map of starting values for channels
@@ -25,12 +26,6 @@
   (update-in state
              [:channels]
              (partial reduce-kv (fn [m k v] (assoc m k (f v))) nil)))
-
-(defn interp-default
-  "Default interpolation. Treats first value of `nil` as `0`."
-  [val-1 val-2 pos]
-  (let [val-1 (or val-1 0)]
-    (+ val-1 (* (- val-2 val-1) pos))))
 
 (defn apply-fade
   "Apply a fade to a current value, return new current value (unchanged if fade in the future).
@@ -99,7 +94,7 @@
   (let [{:keys [fades current interp]} (get channels ch)]
     (if (empty? fades)
       current
-      (apply-fade (or interp interp-default)
+      (apply-fade (or interp it/interp-default)
                   (first fades)
                   time
                   current))))
