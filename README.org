@@ -49,7 +49,7 @@ Note that default initial value is =nil=. The default interpolator will interpre
 Add an automation fade to a state:
 
 #+BEGIN_SRC clojure
-  (tw/automate state :my-param 200 10 1.0)
+  (tw/automate-at state :my-param 200 10 1.0)
 #+END_SRC
 
 Arguments are: state, channel name, starting timestamp, duration, final (target) value. This returns a new state. The fade duration (which here has length =10=) specifies that the fade terminates at =210=; sampling here will return =1.0=. Sampling at =209= will return a value slightly biased towards the previous value of =:my-param=.
@@ -57,6 +57,8 @@ Arguments are: state, channel name, starting timestamp, duration, final (target)
 Overlapping fades on the same channel is discouraged. (The behaviour is well-defined but probably not useful.)
 
 Anywhere beyond a fade, sampling the value will return the final value of the fade (in the example above, =1.0=).
+
+See also =automate-by=, which starts a fade at a relative offset from the state's current location.
 
 ** Location and Sampling
 
@@ -70,7 +72,7 @@ A call to =locate= returns a new state with any fades which lie totally in front
 
 #+BEGIN_SRC clojure
   (-> (tw/initial)
-      (tw/automate :my-param 100 10 9.9)
+      (tw/automate-at :my-param 100 10 9.9)
       (tw/locate 150)
       (tw/sample :my-param))
 #+END_SRC

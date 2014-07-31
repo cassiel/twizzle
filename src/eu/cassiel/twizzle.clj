@@ -60,7 +60,7 @@
             :else
             channel))))
 
-(defn automate
+(defn automate-at
   "Add an automation fade to a channel `ch`. The fade starts at time, `ts`,
    lasts for `dur` frames and fades from the current value to `target`.
 
@@ -78,6 +78,11 @@
                (let [f' (sort-by :start (conj f {:start start-ts :dur dur :target target}))
                      ch' (purge {:fades f' :current c :interp i} (:time state))]
                  ch'))))
+
+(defn automate-by
+  "Start fade at an offset from current location."
+  [state ch offset-ts dur target]
+  (automate-at state ch (+ (:time state) offset-ts) dur target))
 
 (defn locate
   "Change the location of this state to timestamp `ts`, returning a new state. Expired
