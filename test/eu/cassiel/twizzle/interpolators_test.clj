@@ -11,4 +11,11 @@
        (fact "Vector const"
              (it/interp-vectors (fn [_ _ p] p)
                                 [0 1 2] [5 4 10] 1/3)
-             => (repeat 3 1/3)))
+             => (repeat 3 1/3))
+
+       (fact "Vector interp from nil"
+             (it/interp-vectors it/interp-default
+                                nil
+                                [5 4 10]
+                                1/2)
+             => [5/2 4/2 10/2]))
