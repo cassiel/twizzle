@@ -3,10 +3,11 @@
   (:require [eu.cassiel.twizzle [interpolators :as it]]))
 
 (defn initial
-  "Initial system state. Takes an optional map of starting values for channels
-   which, in front of any fades, we want to be other than zero.
+  "Initial system state. Takes an optional map of starting values for
+   channels which, in front of any fades, we want to be other than zero,
+   and an optional map of interpolation functions.
 
-   Also folds the interp functions into the channels."
+   We fold the interp functions into the channels."
   [& {:keys [init interp]}]
   (let [chans (reduce-kv (fn [m k v] (assoc m k {:fades nil
                                                :current v}))
@@ -21,7 +22,7 @@
      :time 0}))
 
 (defn apply-to-channels
-  "Apply function to (fades * current) of all channels."
+  "Apply function to (fades, current, interp) of all channels."
   [state f]
   (update-in state
              [:channels]
@@ -63,13 +64,13 @@
   "Add an automation fade to a channel `ch`. The fade starts at time, `ts`,
    lasts for `dur` frames and fades from the current value to `target`.
 
-   If this fade lies totally in front of the current timestamp, it'll be chased and
-   removed; otherwise it'll be interpolated if it's in scope.
+   If this fade lies totally in front of (earlier than) the current
+   timestamp, it'll be chased and removed; otherwise it'll be
+   interpolated if it's in scope.
 
    Returns a new state.
 
-   Don't overlap fades. Bad things will happen. (Actually, fades will be applied
-   in increasing order of starting stamp.)"
+   Don't overlap fades. Bad things will happen."
   [state ch start-ts dur target]
   (update-in state
              [:channels ch]
