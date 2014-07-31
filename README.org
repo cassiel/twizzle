@@ -77,7 +77,7 @@ A call to =locate= returns a new state with any fades which lie totally in front
 
 This last example returns =9.9=, the target of the purged fade. If we added a second locate point at =50= on the line after the first locate (say: in front of the original fade), the result would still be =9.9=, since the first =locate= would have chased that fade and removed it.
 
-If a fade is in scope (i.e. the `locate` timestamp lies within the fade), it is not purged, and the state's position can still be shifted back and forth along it (although I don't know why you'd want to do that).
+If a fade is in scope (i.e. the =locate= timestamp lies within the fade), it is not purged, and the state's position can still be shifted back and forth along it (although I don't know why you'd want to do that).
 
 Sample a state at its current timestamp:
 
@@ -100,7 +100,7 @@ For automation over values more interesting than floats, provide an interpolatio
 
 The interpolator (in this case, =colour-mix=) will be called with three arguments: start value, end value, and interpolation position (from =0.0= to =1.0=). Unless =nil= works as a potential initial value, provide that as well.
 
-We have some interpolators (including the default) in namespace `eu.cassiel.twizzle.interpolators` - see the [[https://cassiel.github.io/twizzle][documentation]].
+We have some interpolators (including the default) in namespace =eu.cassiel.twizzle.interpolators= - see the [[https://cassiel.github.io/twizzle][documentation]].
 
 ** Complex Keys
 
@@ -112,7 +112,7 @@ Since this is Clojure, there's nothing stopping you using complex keys, like vec
       (tw/sample [:VOLUME 3]))
 #+END_SRC
 
-This would allow groups of channels to be set up and indexed programmatically, while allowing common `:init` or `:interp` values to be set for them (if you don't mind a bit of `reduce` action):
+This would allow groups of channels to be set up and indexed programmatically, while allowing common =:init= or =:interp= values to be set for them (if you don't mind a bit of =reduce= action):
 
 #+BEGIN_SRC clojure
   (tw/initial :init (reduce (fn [m k] (assoc m [:VOLUME k] 127))
