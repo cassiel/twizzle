@@ -3,14 +3,21 @@
 
 (defn initial
   "Initial system state. Takes an optional map of starting values for channels
-   which, in front of any fades, we want to be other than zero."
+   which, in front of any fades, we want to be other than zero.
+
+   Also folds the interp functions into the channels."
   [& {:keys [init interp]}]
-  {:interp interp
-   ;; Channels: map from chan-name to {:fades, :current}.
-   :channels (reduce-kv (fn [m k v] (assoc m k {:fades nil :current v}))
-                        nil
-                        init)
-   :time 0})
+  (let [chans (reduce-kv (fn [m k v] (assoc m k {:fades nil
+                                               :current v}))
+                         nil
+                         init)
+        chans' (reduce-kv (fn [m k v]
+                            (update-in m [k] assoc :interp (get interp k)))
+                          chans
+                          interp)]
+    {;; Channels: map from chan-name to {:fades, :current, :interp}.
+     :channels chans'
+     :time 0}))
 
 (defn apply-to-channels
   "Apply function to (fades * current) of all channels."
@@ -26,22 +33,23 @@
     (+ val-1 (* (- val-2 val-1) pos))))
 
 (defn apply-fade
-  "Apply a fade to a current value, return new current value (unchanged if fade in the future)."
-  [{:keys [start dur target]} ts current]
-  (cond (<= ts start)
+  "Apply a fade to a current value, return new current value (unchanged if fade in the future).
+
+   Edge conditions tweaked to allow zero-length fades, as well as gate-style interpolators."
+  [interp {:keys [start dur target]} ts current]
+  (cond (> start ts)                    ; fade starts ahead of us
         current
 
-        (>= ts (+ start dur))
+        (>= ts (+ start dur))           ; fade is completely over
         target
 
-        ;; duration 0? TESTME
         :else
-        (interp-default current target (/ (- ts start) dur))))
+        (interp current target (/ (- ts start) dur))))
 
 (defn purge
   "Purge a channel; remove all expired fades, chasing them (and updating `:current`)
    as we go."
-  [{:keys [fades current] :as channel} ts]
+  [{:keys [fades current interp] :as channel} ts]
   (if (empty? fades)
     channel
     (let [[f f'] fades]
@@ -50,7 +58,8 @@
 
             (< (+ (:start f) (:dur f)) ts)
             (recur {:fades f'
-                    :current (:target f)} ts)
+                    :current (:target f)
+                    :interp interp} ts)
 
             :else
             channel))))
@@ -69,9 +78,9 @@
   [state ch start-ts dur target]
   (update-in state
              [:channels ch]
-             (fn [{f :fades c :current}]
+             (fn [{f :fades c :current i :interp}]
                (let [f' (sort-by :start (conj f {:start start-ts :dur dur :target target}))
-                     ch' (purge {:fades f' :current c} (:time state))]
+                     ch' (purge {:fades f' :current c :interp i} (:time state))]
                  ch'))))
 
 (defn locate
@@ -87,7 +96,10 @@
   "Sample a channel `ch` at the state's current time. Assume purged (i.e. no fades
    are completely in front of the sample point)."
   [{:keys [channels time]} ch]
-  (let [{:keys [fades current]} (get channels ch)]
+  (let [{:keys [fades current interp]} (get channels ch)]
     (if (empty? fades)
       current
-      (apply-fade (first fades) time current))))
+      (apply-fade (or interp interp-default)
+                  (first fades)
+                  time
+                  current))))

@@ -5,13 +5,13 @@
 
 * Introduction
 
-A Clojure library for simple timeline-based automation, useful for animation systems.
+The Adventures of Twizzle: a Clojure library for simple timeline-based automation, useful for animation systems.
 
-An automation state maps named /channels/ to time-varying values. Each channel can be populated with automation segments, each of which has a start time, duration and target value for the channel's value.
+An automation state maps named /channels/ to time-varying values. Each channel can be populated with automation segments, each of which has a start time, duration and target value for the channel at the end of the fade.
 
-=twizzle= doesn't have a particular notion of time: it just uses timeline values which can be milliseconds (for realtime animation), frames (for rendering), floats, or anything else numerical.
+=twizzle= doesn't have a specific notion of time: it just uses timeline values which can be milliseconds (for realtime animation), frames (for rendering), floats, or anything else numerical.
 
-By default, channel values are floats (mainly because the default interpolator returns floats), but it's possible to attach interpolation functions to allow automation over arbitrary data values (for example, vectors of floats for RGB colour mixing).
+By default, channel values are rationals or floats (mainly because the default interpolator works in conventional arithmetic), but it's possible to attach interpolation functions to allow automation over arbitrary data values (for example, vectors of floats for RGB colour mixing), or to implement unusual fade behaviours (such as an on/off gate for the period of a fade).
 
 * Usage
 ** Setup
@@ -42,9 +42,9 @@ For a state with non-default starting values, add an initialisation map:
                                 :starts-at-one 1.0}))
 #+END_SRC
 
-Note that default initial value is =nil=. The default interpolator will interpret a start point of =nil= as =0= in any calculations, so once you start fading you'll get floats, but before any fades take effect the sampled value will come back as =nil=.
+Note that default initial value is =nil=. The default interpolator will interpret a start point of =nil= as =0= in any calculations, so once you start fading you'll get rationals or floats, but before any fades take effect the sampled value will come back as =nil=.
 
-** Sampling and Fading
+** Adding Fades
 
 Add an automation fade to a state:
 
@@ -54,7 +54,11 @@ Add an automation fade to a state:
 
 Arguments are: state, channel name, starting timestamp, duration, final (target) value. This returns a new state. The fade duration (which here has length =10=) specifies that the fade terminates at =210=; sampling here will return =1.0=. Sampling at =209= will return a value slightly biased towards the previous value of =:my-param=.
 
-Sampling anywhere beyond this fade will return the final value of the fade (=1.0=). If several consecutive fades are present for a channel, the result will be the final value of the fade with the highest starting time. (Aside: don't overlap fades on the same channel.)
+Overlapping fades on the same channel is discouraged. (The behaviour is well-defined but probably not useful.)
+
+Anywhere beyond a fade, sampling the value will return the final value of the fade (in the example above, =1.0=).
+
+** Location and Sampling
 
 Locate a state to a particular position:
 
@@ -62,7 +66,7 @@ Locate a state to a particular position:
   (tw/locate state 300)
 #+END_SRC
 
-A call to =locate= returns a new state with any fades which lie in front of the specified timestamp (here, =300=) to be removed, once they've been sampled: in other words, the fades are /chased/, so that the target values of purged fades are applied. Example:
+A call to =locate= returns a new state with any fades which lie totally in front of (earlier than) the specified timestamp (here, =300=) to be removed, once they've been sampled: in other words, the fades are /chased/, so that the target values of purged fades are applied. Example:
 
 #+BEGIN_SRC clojure
   (-> (tw/initial)
@@ -72,6 +76,8 @@ A call to =locate= returns a new state with any fades which lie in front of the 
 #+END_SRC
 
 This last example returns =9.9=, the target of the purged fade. If we added a second locate point at =50= on the line after the first locate (say: in front of the original fade), the result would still be =9.9=, since the first =locate= would have chased that fade and removed it.
+
+If a fade is in scope (i.e. the `locate` timestamp lies within the fade), it is not purged, and the state's position can still be shifted back and forth along it (although I don't know why you'd want to do that).
 
 Sample a state at its current timestamp:
 
@@ -93,6 +99,24 @@ For automation over values more interesting than floats, provide an interpolatio
 #+END_SRC
 
 The interpolator (in this case, =colour-mix=) will be called with three arguments: start value, end value, and interpolation position (from =0.0= to =1.0=). Unless =nil= works as a potential initial value, provide that as well.
+
+** Complex Keys
+
+Since this is Clojure, there's nothing stopping you using complex keys, like vectors, as channel names:
+
+#+BEGIN_SRC clojure
+  (-> (tw/initial :init {[:VOLUME 3] 127})
+      ...
+      (tw/sample [:VOLUME 3]))
+#+END_SRC
+
+This would allow groups of channels to be set up and indexed programmatically, while allowing common `:init` or `:interp` values to be set for them (if you don't mind a bit of `reduce` action):
+
+#+BEGIN_SRC clojure
+  (tw/initial :init (reduce (fn [m k] (assoc m [:VOLUME k] 127))
+                            nil
+                            (range 10)))
+#+END_SRC
 
 * Documentation
 

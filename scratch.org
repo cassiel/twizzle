@@ -28,12 +28,7 @@
 
 #+BEGIN_SRC clojure
   (ns user
-    (:require [eu.cassiel [twizzle :as tw]]))
-
-  (tw/apply-to-fades {:channels {:A {:fades (seq [1 4 66 78])}
-                                 :B {:fades (seq [999]) :current 3.142}
-                                 :C {:fades nil}}}
-                     #(conj % 0))
+    (:require (eu.cassiel [twizzle :as tw])))
 
   (tw/apply-to-channels {:channels {:A {:fades (seq [1 4 66 78])}
                                     :B {:fades (seq [999]) :current 3.142}
@@ -47,6 +42,17 @@
   (-> (tw/initial :init {:X 99})
       (tw/automate :X 100 20 0)
       (tw/locate 100)
+      (tw/sample :X))
+
+  (-> (tw/initial :init {:X 100}
+                  :interp {:X (fn [v1 v2 p] p)})
+      (tw/automate :X 100 20 0)
+      (tw/locate 110)
+      (tw/sample :X))
+
+  (-> (tw/initial :interp {:X (fn [v1 v2 p] p)})
+      (tw/automate :X 100 20 0)
+      (tw/locate 110)
       (tw/sample :X))
 
   (-> (tw/initial)
