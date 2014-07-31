@@ -48,7 +48,7 @@
   [{:keys [fades current interp] :as channel} ts]
   (if (empty? fades)
     channel
-    (let [[f f'] fades]
+    (let [[f & f'] fades]
       (cond (> (:start f) ts)
             channel
 

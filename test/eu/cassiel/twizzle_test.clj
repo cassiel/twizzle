@@ -90,6 +90,14 @@
                  (tw/sample :my-param))
              => (roughly 9.9))
 
+       (fact "Multiple purge"
+             (-> (tw/initial)
+                 (tw/automate-at :X 100 10 99)
+                 (tw/automate-at :X 105 10 88)
+                 (tw/locate 120)
+                 (tw/sample :X))
+             => 88)
+
        (fact "Double locate within fade (1)"
              (-> (tw/initial)
                  (tw/automate-at :my-param 100 10 10.0)

@@ -2,7 +2,6 @@
 #+STARTUP: indent
 
 * SCRATCH
-
 ** Random testing
 
 #+BEGIN_SRC clojure
@@ -24,6 +23,8 @@
   (reduce-kv (fn [m k v] (assoc m k (- v))) nil {:A 1 :B 3})
 
   (interleave [11 22 33] (repeat 0))
+
+  (let [[f & f'] (range 10)] {:f f :f' f'})
 #+END_SRC
 
 ** Internal testing

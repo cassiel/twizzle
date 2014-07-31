@@ -126,6 +126,12 @@ This would allow groups of channels to be set up and indexed programmatically, w
 
 The source documentation is [[https://cassiel.github.io/twizzle][here]].
 
+* Changelog
+
+- =0.1.1-SNAPSHOT=, =2014-07-31= :: Bug-fix (purging multiple fades).
+
+- =0.1.0-SNAPSHOT=, =2014-07-31= :: Internal release.
+
 * License
 
 Copyright © 2014 Nick Rothwell.
