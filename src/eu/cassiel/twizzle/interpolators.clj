@@ -9,10 +9,13 @@
 
 (defn interp-vectors
   "Interpolate between vectors (in the informal sense; is also happy with sequences).
-   This takes a function to interpolate the elements.
+   This can take a function to interpolate the elements (or use the default).
 
    A nil first vector is treated as `(repeat 0)`."
-  [f v1 v2 p]
-  (->> (interleave (or v1 (repeat 0)) v2)
-       (partition 2)
-       (map (fn [[x y]] (f x y p)))))
+  ([f v1 v2 p]
+      (->> (interleave (or v1 (repeat 0)) v2)
+           (partition 2)
+           (map (fn [[x y]] (f x y p)))))
+
+  ([v1 v2 p]
+     (interp-vectors interp-default v1 v2 p)))

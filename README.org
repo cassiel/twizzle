@@ -19,7 +19,7 @@ By default, channel values are rationals or floats (mainly because the default i
 In =project.clj=:
 
 #+BEGIN_SRC clojure
-  [eu.cassiel/twizzle "0.1.1-SNAPSHOT"]
+  [eu.cassiel/twizzle "0.2.0-SNAPSHOT"]
 #+END_SRC
 
 In the code:
@@ -127,6 +127,8 @@ This would allow groups of channels to be set up and indexed programmatically, w
 The source documentation is [[https://cassiel.github.io/twizzle][here]].
 
 * Changelog
+
+- =0.2.0-SNAPSHOT=, =2014-07-31= :: Default function for vector interpolator.
 
 - =0.1.1-SNAPSHOT=, =2014-07-31= :: Bug-fix (purging multiple fades).
 

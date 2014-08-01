@@ -18,4 +18,10 @@
                                 nil
                                 [5 4 10]
                                 1/2)
+             => [5/2 4/2 10/2])
+
+       (fact "Vector interp uses default scalar interp"
+             (it/interp-vectors nil
+                                [5 4 10]
+                                1/2)
              => [5/2 4/2 10/2]))
