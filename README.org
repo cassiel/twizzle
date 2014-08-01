@@ -19,7 +19,7 @@ By default, channel values are rationals or floats (mainly because the default i
 In =project.clj=:
 
 #+BEGIN_SRC clojure
-  [eu.cassiel/twizzle "0.1.0-SNAPSHOT"]
+  [eu.cassiel/twizzle "0.1.1-SNAPSHOT"]
 #+END_SRC
 
 In the code:
