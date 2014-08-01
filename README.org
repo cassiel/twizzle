@@ -128,7 +128,7 @@ The source documentation is [[https://cassiel.github.io/twizzle][here]].
 
 * Changelog
 
-- =0.2.0-SNAPSHOT=, =2014-07-31= :: Default function for vector interpolator.
+- =0.2.0-SNAPSHOT=, =2014-08-01= :: Default function for vector interpolator.
 
 - =0.1.1-SNAPSHOT=, =2014-07-31= :: Bug-fix (purging multiple fades).
 
