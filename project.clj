@@ -1,6 +1,6 @@
 (defproject eu.cassiel/twizzle "0.2.0-SNAPSHOT"
   :description "FIXME: write description"
-  :url "http://example.com/FIXME"
+  :url "https://github.com/cassiel/twizzle"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.6.0"]]
@@ -10,5 +10,5 @@
                    [codox "0.8.10"]]
          :codox {:output-dir "../../cassiel.gh-pages/twizzle"
                  :defaults {:doc/format :markdown}
-                 :src-dir-uri "http://github.com/cassiel/twizzle/blob/master/"
+                 :src-dir-uri "https://github.com/cassiel/twizzle/blob/master/"
                  :src-linenum-anchor-prefix "L"}}})
