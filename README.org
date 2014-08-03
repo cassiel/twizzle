@@ -20,10 +20,6 @@ In =project.clj=:
 
 [[http://clojars.org/eu.cassiel/twizzle][http://clojars.org/eu.cassiel/twizzle/latest-version.svg]]
 
-#+BEGIN_SRC clojure
-  [eu.cassiel/twizzle "0.2.0"]
-#+END_SRC
-
 In the code:
 
 #+BEGIN_SRC clojure
