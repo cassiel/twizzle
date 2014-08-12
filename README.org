@@ -126,6 +126,8 @@ The source documentation is [[https://cassiel.github.io/twizzle][here]].
 
 * Changelog
 
+- =0.3.1-SNAPSHOT=, =2014-08-12= :: Bug-fix (function reordering), not caught in tests (I hate you, Midje).
+
 - =0.3.0-SNAPSHOT=, =2014-08-12= :: Implemented `clear`.
 
 - =0.2.0=, =2014-08-03= :: Deployment.
