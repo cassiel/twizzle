@@ -126,6 +126,8 @@ The source documentation is [[https://cassiel.github.io/twizzle][here]].
 
 * Changelog
 
+- =0.3.0-SNAPSHOT=, =2014-08-12= :: Implemented `clear`.
+
 - =0.2.0=, =2014-08-03= :: Deployment.
 
 - =0.2.0-SNAPSHOT=, =2014-08-01= :: Default function for vector interpolator.

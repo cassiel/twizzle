@@ -63,6 +63,25 @@
       (tw/automate :my-param 100 10 10.0)
       (tw/sample :my-param))
 
-  (tw/purge-and-sample {:fades (seq [{:start 100 :dur 10 :target 10.0}])}
-                       105)
+  (-> (tw/initial)
+      (tw/automate-at :A 100 10 1.0)
+      (tw/clear :A)
+      (tw/locate 200)
+      (tw/sample :A))
+
+  (-> (tw/initial)
+      (tw/automate-at :A 100 10 1)
+      (tw/locate 105)
+      (get-in [:channels :A])
+      #_ (tw/sample-channel 105)
+
+      #_ (tw/clear :A)
+      #_ (tw/sample :A))
+
+  (as-> (tw/initial) S
+        (tw/automate-at S :A 100 10 1)
+        (tw/automate-at S :B 100 10 1)
+        (tw/clear S :A)
+        (tw/locate S 105)
+        (map #(tw/sample S %) [:A :B]))
 #+END_SRC

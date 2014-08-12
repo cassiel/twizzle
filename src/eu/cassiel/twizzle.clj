@@ -44,7 +44,7 @@
 
 (defn purge
   "Purge a channel; remove all expired fades, chasing them (and updating `:current`)
-   as we go."
+   as we go. Exit (without interpolating) if we end up with a fade in scope."
   [{:keys [fades current interp] :as channel} ts]
   (if (empty? fades)
     channel
@@ -59,6 +59,18 @@
 
             :else
             channel))))
+
+(defn clear
+  "Clear all fades from a channel. Any fade that's partially done at the current location is
+   chased to its current value. (Done by purging to the current location, and then clearing
+   the channel."
+  [{:keys [time] :as state} ch]
+  (update-in state
+             [:channels ch]
+             #(-> %
+                  (purge time)
+                  (assoc :current (sample-channel % time))
+                  (dissoc :fades))))
 
 (defn automate-at
   "Add an automation fade to a channel `ch`. The fade starts at time, `ts`,
@@ -93,14 +105,18 @@
       (assoc :time ts)
       (apply-to-channels #(purge % ts))))
 
+(defn sample-channel
+  "Sample a channel at `t`  Assume purged (i.e. no fades are completely in
+   front of the sample point)."
+  [{:keys [fades current interp]} t]
+  (if (empty? fades)
+    current
+    (apply-fade (or interp it/interp-default)
+                (first fades)
+                t
+                current)))
+
 (defn sample
-  "Sample a channel `ch` at the state's current time. Assume purged (i.e. no fades
-   are completely in front of the sample point)."
+  "Sample a channel `ch` at the state's current time."
   [{:keys [channels time]} ch]
-  (let [{:keys [fades current interp]} (get channels ch)]
-    (if (empty? fades)
-      current
-      (apply-fade (or interp it/interp-default)
-                  (first fades)
-                  time
-                  current))))
+  (sample-channel (get channels ch) time))

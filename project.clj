@@ -1,4 +1,4 @@
-(defproject eu.cassiel/twizzle "0.2.0"
+(defproject eu.cassiel/twizzle "0.3.0-SNAPSHOT"
   :description "A simple automation system for animation and realtime control"
   :url "https://github.com/cassiel/twizzle"
   :signing {:gpg-key "nick@cassiel.eu"}

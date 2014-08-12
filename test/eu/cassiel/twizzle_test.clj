@@ -197,6 +197,40 @@
                  (tw/sample [:VOLUME 3]))
              => 1/2))
 
+(facts "Clearing channels"
+       (fact "Clear then post-locate"
+             (-> (tw/initial)
+                 (tw/automate-at :A 100 10 1.0)
+                 (tw/clear :A)
+                 (tw/locate 200)
+                 (tw/sample :A))
+             => nil)
+
+       (fact "Post-locate then clear"
+             (-> (tw/initial)
+                 (tw/automate-at :A 100 10 1)
+                 (tw/locate 200)
+                 (tw/clear :A)
+                 (tw/sample :A))
+             => 1)
+
+       (fact "Mid-fade locate then clear"
+             (-> (tw/initial)
+                 (tw/automate-at :A 100 10 1)
+                 (tw/locate 105)
+                 (tw/clear :A)
+                 (tw/sample :A))
+             => 1/2)
+
+       (fact "Channels distinct"
+             (as-> (tw/initial) S
+                   (tw/automate-at S :A 100 10 1)
+                   (tw/automate-at S :B 100 10 1)
+                   (tw/clear S :A)
+                   (tw/locate S 105)
+                   (map #(tw/sample S %) [:A :B]))
+             => [nil 1/2]))
+
 (facts "Interpolation functions"
        (fact "Simple interpolation with init (use interpolation position as value)"
              (-> (tw/initial :init {:A 0}
