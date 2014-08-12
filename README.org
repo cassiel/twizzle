@@ -58,6 +58,14 @@ Anywhere beyond a fade, sampling the value will return the final value of the fa
 
 See also =automate-by=, which starts a fade at a relative offset from the state's current location.
 
+A channel can be completely cleared of fades by
+
+#+BEGIN_SRC clojure
+  (tw/clear state :my-param)
+#+END_SRC
+
+All fades in front of the current location are applied; all those ahead of the current position are discarded. Any fade that is in progress is interpolated, and its intermediate value saved before the fade is removed. The =clear= function is useful when live coding (to prevent manually applied fades overlapping); it can also be used to smooth live controller input by taking each incoming value =x= and doing a =clear= followed by an =automate-by= at the current location with a short fade time.
+
 ** Location and Sampling
 
 Locate a state to a particular position:
@@ -87,7 +95,7 @@ Sample a state at its current timestamp:
 
 A call to =sample= just returns the sampled value at that timestamp; the state is not changed.
 
-** TODO Interpolating
+** Interpolating
 
 For automation over values more interesting than floats, provide an interpolation function:
 
@@ -98,7 +106,16 @@ For automation over values more interesting than floats, provide an interpolatio
                                 :background [0 0 0]}))
 #+END_SRC
 
-The interpolator (in this case, =colour-mix=) will be called with three arguments: start value, end value, and interpolation position (from =0.0= to =1.0=). Unless =nil= works as a potential initial value, provide that as well.
+The interpolator (in this case, =colour-mix=) will be called with three arguments: start value, end value, and interpolation position (from =0.0= to =1.0=). Unless =nil= works as a potential initial value, provide that value as well.
+
+There's no reason why the interpolator - or the automation channel - should actually be numeric at all. Channels can "automate" arbitrary values, so long as the interpolator handles them. Here's an example (currently being used by us on stage):
+
+#+BEGIN_SRC clojure
+  (def state (tw/initial :init   {:text "---"}
+                         :interp {:text (fn [_ to _] to}}))
+#+END_SRC
+
+This channel has an initial value of ="---"= and any fade to another value (of any type) takes effect immediately.
 
 We have some interpolators (including the default) in namespace =eu.cassiel.twizzle.interpolators= - see the [[https://cassiel.github.io/twizzle][documentation]].
 
