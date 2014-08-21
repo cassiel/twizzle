@@ -19,3 +19,12 @@
 
   ([v1 v2 p]
      (interp-vectors interp-default v1 v2 p)))
+
+(defn wrap-tween
+  "Utility function to wrap `tween-clj` library."
+  [tween-ease tween-transition]
+  (let [tt (partial tween-ease tween-transition)]
+    (fn [val-1 val-2 pos]
+      (let [val-1 (or val-1 0)]
+        (+ val-1 (* (- val-2 val-1)
+                    (tt pos)))))))

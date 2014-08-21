@@ -143,6 +143,8 @@ The source documentation is [[https://cassiel.github.io/twizzle][here]].
 
 * Changelog
 
+- =0.4.1-SNAPSHOT=, =2014-08-21= :: A bit of wrapper code for =[[https://github.com/gstamp/tween-clj][tween-clj]]=.
+
 - =0.3.1-SNAPSHOT=, =2014-08-12= :: Bug-fix (function reordering), not caught in tests (I hate you, Midje).
 
 - =0.3.0-SNAPSHOT=, =2014-08-12= :: Implemented `clear`.
