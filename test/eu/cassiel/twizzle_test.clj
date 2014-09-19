@@ -63,7 +63,7 @@
        (fact "Mid fade"
              (-> (tw/initial)
                  (tw/locate 100)
-                 (tw/automate-by :my-param 10 10 100)
+                 (tw/automate-in :my-param 10 10 100)
                  (tw/locate 115)
                  (tw/sample :my-param))
              => 50)
@@ -71,13 +71,13 @@
        (fact "Relative in past"
              (-> (tw/initial)
                  (tw/locate 100)
-                 (tw/automate-by :my-param -20 10 3)
+                 (tw/automate-in :my-param -20 10 3)
                  (tw/sample :my-param))
              => 3)
 
        (fact "Relative ahead"
              (-> (tw/initial :init {:my-param -3})
-                 (tw/automate-by :my-param 10 10 3)
+                 (tw/automate-in :my-param 10 10 3)
                  (tw/sample :my-param))
              => -3))
 

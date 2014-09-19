@@ -56,7 +56,7 @@ Overlapping fades on the same channel is discouraged. (The behaviour is well-def
 
 Anywhere beyond a fade, sampling the value will return the final value of the fade (in the example above, =1.0=).
 
-See also =automate-by=, which starts a fade at a relative offset from the state's current location.
+See also =automate-in=, which starts a fade at a relative offset from the state's current location.
 
 A channel can be completely cleared of fades by
 
@@ -64,7 +64,7 @@ A channel can be completely cleared of fades by
   (tw/clear state :my-param)
 #+END_SRC
 
-All fades in front of the current location are applied; all those ahead of the current position are discarded. Any fade that is in progress is interpolated, and its intermediate value saved before the fade is removed. The =clear= function is useful when live coding (to prevent manually applied fades overlapping); it can also be used to smooth live controller input by taking each incoming value =x= and doing a =clear= followed by an =automate-by= at the current location with a short fade time.
+All fades in front of the current location are applied; all those ahead of the current position are discarded. Any fade that is in progress is interpolated, and its intermediate value saved before the fade is removed. The =clear= function is useful when live coding (to prevent manually applied fades overlapping); it can also be used to smooth live controller input by taking each incoming value =x= and doing a =clear= followed by an =automate-in= at the current location with a short fade time.
 
 ** Location and Sampling
 
@@ -142,6 +142,8 @@ This would allow groups of channels to be set up and indexed programmatically, w
 The source documentation is [[https://cassiel.github.io/twizzle][here]].
 
 * Changelog
+
+- =0.5.0=, =2014-09-19= :: *Breaking change* (prior to public release): renamed =automate-by= to =automate-in=.
 
 - =0.4.1-SNAPSHOT=, =2014-08-21= :: A bit of wrapper code for =[[https://github.com/gstamp/tween-clj][tween-clj]]=.
 

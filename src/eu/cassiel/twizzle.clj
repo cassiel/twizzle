@@ -103,7 +103,7 @@
                      ch' (purge {:fades f' :current c :interp i} (:time state))]
                  ch'))))
 
-(defn automate-by
+(defn automate-in
   "Start fade at an offset from current location."
   [state ch offset-ts dur target]
   (automate-at state ch (+ (:time state) offset-ts) dur target))
