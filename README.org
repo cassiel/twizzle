@@ -3,7 +3,7 @@
 
 * =twizzle= [[http://travis-ci.org/cassiel/twizzle][https://secure.travis-ci.org/cassiel/twizzle.png]] [[https://www.versioneye.com/user/projects/53d2a43b851c56dc68000231][https://www.versioneye.com/user/projects/53d2a43b851c56dc68000231/badge.svg]]
 
-* Introduction
+** Introduction
 
 The Adventures of Twizzle: a Clojure library for simple timeline-based automation, useful for animation systems.
 
@@ -13,8 +13,8 @@ An automation state maps named /channels/ to time-varying values. Each channel c
 
 By default, channel values are rationals or floats (mainly because the default interpolator works in conventional arithmetic), but it's possible to attach interpolation functions to allow automation over arbitrary data values (for example, vectors of floats for RGB colour mixing), or to implement unusual fade behaviours (such as an on/off gate for the period of a fade).
 
-* Usage
-** Setup
+** Usage
+*** Setup
 
 In =project.clj=:
 
@@ -42,7 +42,7 @@ For a state with non-default starting values, add an initialisation map:
 
 Note that default initial value is =nil=. The default interpolator will interpret a start point of =nil= as =0= in any calculations, so once you start fading you'll get rationals or floats, but before any fades take effect the sampled value will come back as =nil=.
 
-** Adding Fades
+*** Adding Fades
 
 Add an automation fade to a state:
 
@@ -66,7 +66,7 @@ A channel can be completely cleared of fades by
 
 All fades in front of the current location are applied; all those ahead of the current position are discarded. Any fade that is in progress is interpolated, and its intermediate value saved before the fade is removed. The =clear= function is useful when live coding (to prevent manually applied fades overlapping); it can also be used to smooth live controller input by taking each incoming value =x= and doing a =clear= followed by an =automate-in= at the current location with a short fade time.
 
-** Location and Sampling
+*** Location and Sampling
 
 Locate a state to a particular position:
 
@@ -95,7 +95,7 @@ Sample a state at its current timestamp:
 
 A call to =sample= just returns the sampled value at that timestamp; the state is not changed.
 
-** Interpolating
+*** Interpolating
 
 For automation over values more interesting than floats, provide an interpolation function:
 
@@ -119,7 +119,7 @@ This channel has an initial value of ="---"= and any fade to another value (of a
 
 We have some interpolators (including the default) in namespace =eu.cassiel.twizzle.interpolators= - see the [[https://cassiel.github.io/twizzle][documentation]].
 
-** Complex Keys
+*** Complex Keys
 
 Since this is Clojure, there's nothing stopping you using complex keys, like vectors, as channel names:
 
@@ -137,11 +137,11 @@ This would allow groups of channels to be set up and indexed programmatically, w
                             (range 10)))
 #+END_SRC
 
-* Documentation
+** Documentation
 
 The source documentation is [[https://cassiel.github.io/twizzle][here]].
 
-* Changelog
+** Changelog
 
 - =0.5.0=, =2014-09-19= :: *Breaking change* (prior to public release): renamed =automate-by= to =automate-in=.
 
@@ -159,7 +159,7 @@ The source documentation is [[https://cassiel.github.io/twizzle][here]].
 
 - =0.1.0-SNAPSHOT=, =2014-07-31= :: Internal release.
 
-* License
+** License
 
 Copyright © 2014 Nick Rothwell.
 
