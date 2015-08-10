@@ -1,6 +1,6 @@
 (ns eu.cassiel.twizzle
   "The Adventures of Twizzle, a simple timeline automation system."
-  (:require [eu.cassiel.twizzle [interpolators :as it]]))
+  (:require [eu.cassiel.twizzle.interpolators :as it]))
 
 (defn initial
   "Initial system state. Takes an optional map of starting values for
