@@ -143,6 +143,8 @@ The source documentation is [[https://cassiel.github.io/twizzle][here]].
 
 ** Changelog
 
+- =0.6.0-SNAPSHOT=, =2015-08-10= :: Incorporating ClojureScript support: Clojure 1.7.0 dependency, =.cljc= source file extension, tweaks to =:require= syntax.
+
 - =0.5.0=, =2014-09-19= :: *Breaking change* (prior to public release): renamed =automate-by= to =automate-in=.
 
 - =0.4.1-SNAPSHOT=, =2014-08-21= :: A bit of wrapper code for =[[https://github.com/gstamp/tween-clj][tween-clj]]=.
