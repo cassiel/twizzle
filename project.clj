@@ -1,4 +1,4 @@
-(defproject eu.cassiel/twizzle "0.5.0"
+(defproject eu.cassiel/twizzle "0.6.0-SNAPSHOT"
   :description "A simple automation system for animation and realtime control"
   :url "https://github.com/cassiel/twizzle"
   :signing {:gpg-key "nick@cassiel.eu"}
@@ -6,7 +6,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.7.0"]]
   :profiles
-  {:dev {:dependencies [[midje "1.6.3"]]
+  {:dev {:dependencies [[midje "1.7.0"]]
          :plugins [[lein-midje "3.1.3"]
                    [codox "0.8.13"]]
          :codox {:output-dir "../../cassiel.gh-pages/twizzle"
