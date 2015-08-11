@@ -8,7 +8,8 @@
   :profiles
   {:dev {:dependencies [[midje "1.7.0"]]
          :plugins [[lein-midje "3.1.3"]
-                   [codox "0.8.13"]]
+                   [codox "0.8.13"]
+                   [michaelblume/lein-marginalia "0.9.0"]]
          :codox {:output-dir "../../cassiel.gh-pages/twizzle"
                  :defaults {:doc/format :markdown}
                  :src-dir-uri "https://github.com/cassiel/twizzle/blob/master/"
