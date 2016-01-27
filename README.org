@@ -24,7 +24,7 @@ In the code:
 
 #+BEGIN_SRC clojure
   (ns example
-    (:require (eu.cassiel [twizzle :as tw])))
+    (:require [eu.cassiel.twizzle :as tw]))
 #+END_SRC
 
 Create a new automation state with
@@ -142,6 +142,8 @@ This would allow groups of channels to be set up and indexed programmatically, w
 The source documentation is [[https://cassiel.github.io/twizzle][here]].
 
 ** Changelog
+
+- =0.6.0=, =2016-01-27= :: Release: ClojureScript tweaks to =:require= syntax in =README=.
 
 - =0.6.0-SNAPSHOT=, =2015-08-10= :: Incorporating ClojureScript support: Clojure 1.7.0 dependency, =.cljc= source file extension, tweaks to =:require= syntax.
 
